@@ -1,0 +1,70 @@
+---
+- name: Common Kubernetes Setup
+  hosts: all
+  become: true # Run tasks with sudo (requires passwordless sudo or --ask-become-pass)
+  tasks:
+    - name: Update apt cache and install necessary packages
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+        update_cache: yes
+
+    - name: Download and dearmor Kubernetes GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add Kubernetes APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /"
+        state: present
+        filename: kubernetes
+        update_cache: yes
+
+    - name: Install kubelet, kubeadm, and kubectl
+      ansible.builtin.apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+        update_cache: yes
+
+    - name: Install containerd
+      ansible.builtin.apt:
+        name: containerd
+        state: present
+        update_cache: yes
+
+    - name: Ensure containerd configuration directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        mode: '0755'
+
+    - name: Deploy containerd config.toml with systemd cgroup driver
+      ansible.builtin.template:
+        src: templates/containerd.toml # Path to the template file on Ansible folder
+        dest: /etc/containerd/config.toml
+        mode: '0644'
+
+    - name: Ensure containerd service is enabled and running
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: started
+        enabled: yes
+
+    - name: Force daemon-reload for containerd
+      ansible.builtin.systemd_service:
+        name: containerd
+        daemon_reload: yes
+
+    - name: Restart containerd service for config changes to take effect
+      ansible.builtin.systemd_service:
+        name: containerd
+        state: restarted
