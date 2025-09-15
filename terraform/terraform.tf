@@ -20,7 +20,7 @@ resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tpl", {
     control_plane_ip = aws_instance.control_plane.public_ip
     worker_ips       = aws_instance.worker_nodes[*].public_ip
-    ssh_key_path     = var.ssh_key_name
+    ssh_key_path     = "../terraform/${aws_key_pair.generated_key.key_name}"
   })
   filename = "../ansible/hosts.ini"
 }
