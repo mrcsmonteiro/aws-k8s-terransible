@@ -1,5 +1,5 @@
 [all]
-control_plane ansible_host=${control_plane_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${ssh_key_path}
+control_plane ansible_host=${control_plane_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${ssh_key_path} apiserver_advertise_address=${control_plane_private_ip}
 worker_node_1 ansible_host=${worker_ips[0]} ansible_user=ubuntu ansible_ssh_private_key_file=${ssh_key_path}
 worker_node_2 ansible_host=${worker_ips[1]} ansible_user=ubuntu ansible_ssh_private_key_file=${ssh_key_path}
 
