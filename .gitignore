@@ -56,3 +56,8 @@ override.tf.json
 terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform,git,ansible
+
+# Ignore SSH keys
+.ssh
+*.pem
+*my-ec2-key*

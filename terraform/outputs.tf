@@ -8,5 +8,5 @@ output "worker_public_ips" {
 
 output "ssh_command" {
   description = "SSH command to access the control plane node"
-  value       = "ssh -i ${local_file.private_key_file.filename} ubuntu@${aws_instance.control_plane.public_ip}"
+  value       = "ssh -i ${var.ssh_key_name} ubuntu@${aws_instance.control_plane.public_ip}"
 }

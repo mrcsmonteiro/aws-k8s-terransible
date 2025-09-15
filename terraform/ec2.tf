@@ -1,17 +1,5 @@
-resource "tls_private_key" "my_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "aws_key_pair" "generated_key" {
-  key_name   = "my-ec2-key-tf"
-  public_key = tls_private_key.my_key.public_key_openssh
-}
-
-resource "local_file" "private_key_file" {
-  content         = tls_private_key.my_key.private_key_pem
-  filename        = "my-ec2-key.pem"
-  file_permission = "0400"
+  public_key = file("${path.module}/my-ec2-key.pub")
 }
 
 data "aws_ami" "ubuntu" {
@@ -24,24 +12,24 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "control_plane" {
-  ami             = data.aws_ami.ubuntu.id
-  instance_type   = "t3.micro"
-  subnet_id       = module.vpc.public_subnets[0]
-  security_groups = [aws_security_group.my_k8s_sg.id]
-  key_name        = aws_key_pair.generated_key.key_name
+  ami                     = data.aws_ami.ubuntu.id
+  instance_type           = var.instance_type
+  subnet_id               = module.vpc.public_subnets[0]
+  vpc_security_group_ids = [aws_security_group.my_k8s_sg.id]
+  key_name                = aws_key_pair.generated_key.key_name
   tags = {
-    Name = "k8s-control-plane-node"
+    Name = "control-plane-node"
   }
 }
 
 resource "aws_instance" "worker_nodes" {
-  count           = 2
-  ami             = data.aws_ami.ubuntu.id
-  instance_type   = "t3.micro"
-  subnet_id       = module.vpc.public_subnets[count.index + 1]
-  security_groups = [aws_security_group.my_k8s_sg.id]
-  key_name        = aws_key_pair.generated_key.key_name
+  count                   = 2
+  ami                     = data.aws_ami.ubuntu.id
+  instance_type           = "t3.micro"
+  subnet_id               = module.vpc.public_subnets[count.index + 1]
+  vpc_security_group_ids = [aws_security_group.my_k8s_sg.id]
+  key_name                = aws_key_pair.generated_key.key_name
   tags = {
-    Name = "k8s-worker-node-${count.index + 1}"
+    Name = "worker-node-${count.index + 1}"
   }
 }
