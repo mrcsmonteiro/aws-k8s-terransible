@@ -13,5 +13,5 @@ variable "instance_type" {
 variable "ssh_key_name" {
   type        = string
   description = "Name of the SSH key pair to access EC2 instances"
-  default     = "my-ec2-key"
+  default     = ".ssh/my-ec2-key.pem"
 }
