@@ -2,3 +2,4 @@
 - import_playbook: 01_prepare_all_hosts.yml
 - import_playbook: 02_control_plane_config.yml
 - import_playbook: 03_worker_nodes_config.yml
+- import_playbook: 04_addons.yml
