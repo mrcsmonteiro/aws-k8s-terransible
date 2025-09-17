@@ -24,6 +24,9 @@ ansible/hosts.ini
 # Local .terraform directories
 **/.terraform/*
 
+# .tfplan files
+*.tfplan
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

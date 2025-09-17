@@ -64,26 +64,49 @@ The Ansible playbooks automate the setup and configuration of the Kubernetes clu
 - Install git (v2 or higher)
 - Install AWS CLI (v2 or higher)
 - Configure and export AWS credentials to environment variables in your shell session:
- - `export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"`
- - `export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"`
- - `export AWS_REGION="YOUR_AWS_REGION"`
+
+   ```bash
+   export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
+   export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
+   export AWS_REGION="YOUR_AWS_REGION"
+   ```
 
 > **Note**: using environment variables keeps sensitive information out of your codebase. This prevents accidental exposure of your AWS access keys in version control systems like Git. This practice is crucial for protecting your account from unauthorized access, especially when working in a team or on open-source projects.
 
 ### Deployment
 1. **Clone the repository:**
-   `git clone https://github.com/mrcsmonteiro/aws-k8s-terransible.git`
+   ```bash
+   git clone https://github.com/mrcsmonteiro/aws-k8s-terransible.git
+   ```
 2. **Change to the terraform folder:**
-   `cd aws-k8s-terransible/terraform`
+   ```bash
+   cd aws-k8s-terransible/terraform
+   ```
 3. **Inspect the `variables.tf` file and change its default values according to your preferences:**
-   `cat variables.tf`
+   ```bash
+   cat variables.tf
+   ```
 4. **Initialize Terraform:**
-   `terraform init`
+   ```bash
+   terraform init
+   ```
 5. **Validate the templates:**
-   `terraform validate`
+   ```bash
+   terraform validate
+   ```
 6. **Create a plan and save the output:**
-   `terraform plan -out k8s.tfplan`
+   ```bash
+   terraform plan -out k8s.tfplan
+   ```
 7. **Apply the infrastructure:**
-   `terraform apply k8s.tfplan`
+   ```bash
+   terraform apply k8s.tfplan
+   ```
+8. **Use the Terraform output to SSH into your control-plane node and play with your Kubernetes cluster:**
+   ```bash
+   ssh -i .ssh/my-ec2-key.pem ubuntu@<YOUR_EC2_PUBLIC_IP>
+   ```
 8. **To avoid incurring costs, destroy your AWS resources when you no longer need them:**
-   `terraform destroy`
+   ```bash
+   terraform destroy
+   ```
