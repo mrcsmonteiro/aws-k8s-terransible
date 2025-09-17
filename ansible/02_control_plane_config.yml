@@ -1,0 +1,37 @@
+---
+- name: Initialize Kubernetes Master Node
+  hosts: control_plane
+  become: true
+  vars:
+    pod_network_cidr: "192.168.0.0/16" # Default Calico CIDR
+  tasks:
+    - name: Get stat for admin.conf file on remote host
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: admin_conf_stat
+      ignore_errors: true
+
+    - name: Initialize the Kubernetes cluster
+      ansible.builtin.command: >
+        kubeadm init --apiserver-advertise-address {{ apiserver_advertise_address }} --pod-network-cidr={{ pod_network_cidr }} --upload-certs
+      when: not admin_conf_stat.stat.exists
+
+    - name: Ensure .kube configuration directory exists
+      become: false
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Copy admin.conf to user's .kube directory
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/{{ ansible_user }}/.kube/config
+        remote_src: true
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Install the Calico CNI
+      become: false
+      ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/calico.yaml
