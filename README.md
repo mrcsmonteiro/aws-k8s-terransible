@@ -1,0 +1,1 @@
+![Terransible AWS K8s Cluster](Terransible_AWS_K8s_cluster.png)
