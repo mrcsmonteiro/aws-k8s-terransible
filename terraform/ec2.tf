@@ -38,6 +38,12 @@ resource "aws_instance" "control_plane" {
   tags = {
     Name = "control-plane-node"
   }
+
+  # User data to ensure system is updated and ready for Ansible
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update
+              EOF
 }
 
 resource "aws_instance" "worker_nodes" {
@@ -51,4 +57,10 @@ resource "aws_instance" "worker_nodes" {
   tags = {
     Name = "worker-node-${count.index + 1}"
   }
+
+  # User data to ensure system is updated and ready for Ansible
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update
+              EOF
 }
