@@ -5,10 +5,6 @@
   gather_facts: false
   
   tasks:
-    - name: Pause for 90 seconds to allow SSH service to be fully available
-      ansible.builtin.pause:
-        seconds: 90
-
     - name: Update apt cache and install necessary packages
       ansible.builtin.apt:
         name:
